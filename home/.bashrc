@@ -62,21 +62,31 @@ force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
     else
-	color_prompt=
+        color_prompt=
     fi
 fi
 
 if [ "$color_prompt" = yes ]; then
-    if [ "$(hostname)" = lovelace ] || [ "$(hostname)" = prole ]; then
-        PS1='${debian_chroot:+($debian_chroot)}\[\033[01;37;42m\]\u@\h:\[\033[00m\]\[\033[01;37;44m\]\w\$ \[\033[00m\033[0K\] '
-    else
-        PS1='${debian_chroot:+($debian_chroot)}\[\033[01;37;41m\]\u@\h:\[\033[00m\]\[\033[01;37;44m\]\w\$ \[\033[00m\033[0K\] '
-    fi
+    case "$HOSTNAME" in
+        lovelace|prole|julia)
+            # White text on green
+            PROMPT_COLOUR='01;37;42'
+            ;;
+        #...)
+        #    # White text on black
+        #    PROMPT_COLOUR='01;37;40'
+        #    ;;
+        *)
+            # White text on red
+            PROMPT_COLOUR='01;37;41'
+            ;;
+    esac
+    PS1='${debian_chroot:+($debian_chroot)}\[\033['$PROMPT_COLOUR'm\]\u@\h:\[\033[00m\]\[\033[01;37;44m\]\w\$ \[\033[00m\] '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
