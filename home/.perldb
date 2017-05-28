@@ -1,0 +1,19 @@
+
+eval { require DB::Skip };
+
+if ($@) {
+    print STDERR "DB::Skip not available\n";
+}
+else {
+    my $skip = '^(?:Moose|Eval::Closure|Class::MOP)';
+    
+    print STDERR << "END";
+
+Debugger skipping: /$skip/
+
+See ~/.perldb if you don't like this behavior.
+
+END
+
+    DB::Skip->import(pkgs => [ qr/$skip/ ]);
+}
