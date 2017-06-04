@@ -1,0 +1,44 @@
+
+[TestingAndDebugging::ProhibitNoWarnings]
+# Would prefer to just allow experimental::*, but that doesn't seem to be an
+# option. ('Allow' seems to require exact terms) 
+allow_with_category_restriction = 1
+
+[Variables::ProhibitPunctuationVars]
+# $0, $! - I don't think of as obscure (anymore?).
+allow = $0 $!
+
+[InputOutput::RequireCheckedSyscalls]
+functions = :builtins
+exclude_functions = print
+
+[RegularExpressions::RequireExtendedFormatting]
+# Tweak if desired.
+minimum_regex_length_to_complain_about = 10
+
+####
+####  Disabled rules
+####
+
+[-ValuesAndExpressions::ProhibitVersionStrings]
+# Yes, valid reasoning, but v-strings were introduced in 5.6 in March 2000!
+
+[-ControlStructures::ProhibitUnlessBlocks]
+# I have no problem with unless.
+
+[-Subroutines::ProhibitSubroutinePrototypes]
+# Good idea, but this doesn't recognise signatures as not being prototypes.
+
+[-ErrorHandling::RequireCarping]
+# Sometimes the error is in my code...
+# I don't want this to be as strict as it is. An 'allow_in_main' option would
+# be good.
+
+[-RegularExpressions::RequireDotMatchAnything]
+# I don't make this mistake anymore.
+
+[-RegularExpressions::RequireLineBoundaryMatching]
+# Never been a problem that I can recall.
+
+[-ControlStructures::ProhibitPostfixControls]
+# This is one of my favourite language features! You may not take it away!
