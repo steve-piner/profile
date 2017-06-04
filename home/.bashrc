@@ -73,14 +73,14 @@ fi
 
 if [ "$color_prompt" = yes ]; then
     case "$HOSTNAME" in
-        lovelace|prole|julia)
+        lovelace|julia|obrien)
             # White text on green
             PROMPT_COLOUR='01;37;42'
             ;;
-        #...)
-        #    # White text on black
-        #    PROMPT_COLOUR='01;37;40'
-        #    ;;
+        prole)
+            # White text on black
+            PROMPT_COLOUR='01;37;40'
+            ;;
         *)
             # White text on red
             PROMPT_COLOUR='01;37;41'
