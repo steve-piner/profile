@@ -7,7 +7,7 @@
 # This is the same test, according to bash(1)
 case $- in
     *i*) ;;
-      *) return;;
+    *) return;;
 esac
 
 # SP: No duplicates lines in history (only)
@@ -72,21 +72,25 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
+    HOST_COLOUR=00
+    PATH_COLOUR='01;37;44'
     case "$HOSTNAME" in
         lovelace|julia|obrien)
             # White text on green
-            PROMPT_COLOUR='01;37;42'
+            HOST_COLOUR='01;37;42'
             ;;
         prole)
-            # White text on black
-            PROMPT_COLOUR='01;37;40'
+            # White text on blue
+            HOST_COLOUR='01;37;44'
+            # Yellow text on black
+            PATH_COLOUR='01;33;40'
             ;;
         *)
             # White text on red
-            PROMPT_COLOUR='01;37;41'
+            HOST_COLOUR='01;37;41'
             ;;
     esac
-    PS1='${debian_chroot:+($debian_chroot)}\[\033['$PROMPT_COLOUR'm\]\u@\h:\[\033[00m\]\[\033[01;37;44m\]\w\$ \[\033[00m\] '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033['$HOST_COLOUR'm\]\u@\h:\[\033[00m\]\[\033['$PATH_COLOUR'm\]\w\$ \[\033[00m\] '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
