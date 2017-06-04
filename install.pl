@@ -10,6 +10,7 @@ no warnings 'experimental::signatures';
 
 use File::Basename qw[dirname basename];
 use Cwd qw[realpath];
+
 BEGIN {
     require lib;
     lib->import(realpath dirname($0) . '/../lib');
@@ -28,44 +29,47 @@ my ($source_dir, $dest_dir, $backup_dir);
 sub dest_from_source($source) {
     state $source_re;
     unless ($source_re) {
-        $source_re = '^' . quotemeta $source_dir;
+        $source_re = q[^] . quotemeta $source_dir;
         $source_re = qr/$source_re/;
     }
-    
+
     my $dest = $source;
     if ($dest !~ s/$source_re/$dest_dir/) {
         croak "$source not within $source_dir";
     }
-    
+
     return $dest;
 }
 
 sub backup($source) {
+
     # Backup does not end with '/'.
     state $backup;
     unless ($backup) {
         $backup = $backup_dir . strftime('%FT%H%M', localtime);
     }
-    
+
     my $dest = $backup . $source;
     make_path dirname $dest;
     copy $source, $dest or die "Backup of $source to $dest failed: $!";
+    return;
 }
 
 sub update {
     my $source = $File::Find::name;
     return if -d $source;
-    
+
     my $dest = dest_from_source($source);
-    
+
     if (-e $dest and compare($dest, $source) != 0) {
         backup $dest;
     }
     else {
         make_path dirname $dest;
     }
-    
+
     copy $source, $dest or die "Copy from $source to $dest failed: $!";
+    return;
 }
 
 my ($help, $ok, $default_source, $default_dest, $default_backup);
@@ -76,9 +80,9 @@ $backup_dir = $default_backup = realpath dirname($0) . '/backup';
 
 $ok = GetOptions(
     'source=s' => \$source_dir,
-    'dest=s' => \$dest_dir,
+    'dest=s'   => \$dest_dir,
     'backup=s' => \$backup_dir,
-    'help!' => \$help,
+    'help!'    => \$help,
 );
 
 if ($help or not $ok) {
@@ -101,7 +105,7 @@ HELP
 }
 
 for ($source_dir, $dest_dir, $backup_dir) {
-    $_ .= '/' unless m{/$};
+    $_ .= q[/] unless m{/$};
 }
 
-find({ wanted => \&update, no_chdir => 1 }, $source_dir);
+find({wanted => \&update, no_chdir => 1}, $source_dir);
