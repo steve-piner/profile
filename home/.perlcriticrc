@@ -10,7 +10,7 @@ allow = $0 $!
 
 [InputOutput::RequireCheckedSyscalls]
 functions = :builtins
-exclude_functions = print
+exclude_functions = print say
 
 [RegularExpressions::RequireExtendedFormatting]
 # Tweak if desired.

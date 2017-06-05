@@ -16,7 +16,7 @@ opendir $dh, $dir;
 
 while (my $file = readdir $dh) {
     next if $file =~ /^\.\.?$/;
-    my @args = ('diff', @ARGV, "$dir/$file", "$ENV{HOME}/$file");
+    my @args = ('diff', @ARGV, "$ENV{HOME}/$file", "$dir/$file");
     say "@args";
     system @args;
 }
