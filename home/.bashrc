@@ -182,6 +182,11 @@ fi
 #  source /home/steve/.drush/drush.prompt.sh
 #fi
 
+# Start an SSH Agent unless there is one already.
+if [ "$SSH_AUTH_SOCK" == "" ]; then
+	eval $(ssh-agent)
+fi
+
 # Flash the background until a key is pressed.
 # Use for indicating a task is complete: sleep 3600; flasher
 flasher () {

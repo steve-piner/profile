@@ -1,5 +1,5 @@
 # http://perltidy.sourceforge.net/perltidy.html
-#--continuation-indentation=40
+--continuation-indentation=4
 --stack-opening-tokens
 --stack-closing-tokens
 --paren-tightness=2
