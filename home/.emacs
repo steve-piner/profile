@@ -22,24 +22,24 @@
 
 
 (custom-set-faces
- '(cperl-array-face ((t (:foreground "red"))))
- '(cperl-hash-face ((t (:foreground "blue"))))
- '(cperl-nonoverridable-face ((t (:foreground "blue" :weight bold))))
- '(font-lock-builtin-face ((t (:foreground "red"))))
- '(font-lock-comment-delimiter-face ((t (:foreground "green" :weight bold))))
- '(font-lock-comment-face ((t (:foreground "green"))))
+ '(cperl-array-face ((t (:foreground "darkred"))))
+ '(cperl-hash-face ((t (:foreground "darkblue"))))
+ '(cperl-nonoverridable-face ((t (:foreground "darkblue" :weight bold))))
+ '(font-lock-builtin-face ((t (:foreground "darkred"))))
+ '(font-lock-comment-delimiter-face ((t (:foreground "darkgreen" :weight bold))))
+ '(font-lock-comment-face ((t (:foreground "darkgreen"))))
  '(font-lock-constant-face ((t (:weight bold))))
  '(font-lock-doc-face ((t (:background "yellow")))) ;; Dunno
  '(font-lock-function-name-face ((t (:weight bold))))
- '(font-lock-keyword-face ((t (:foreground "blue" :weight bold))))
+ '(font-lock-keyword-face ((t (:foreground "darkblue" :weight bold))))
  '(font-lock-negation-char-face ((t (:weight bold))))
  '(font-lock-preprocessor-face ((t (:background "yellow")))) ;; Dunno
- '(font-lock-regexp-grouping-backslash ((t (:foreground "red"))))
- '(font-lock-regexp-grouping-construct ((t (:foreground "red"))))
- '(font-lock-string-face ((t (:foreground "cyan"))))
- '(font-lock-type-face ((t (:foreground "blue" :weight bold))))
- '(font-lock-variable-name-face ((t (:foreground "magenta"))))
- '(font-lock-warning-face ((t (:background "red"))))
+ '(font-lock-regexp-grouping-backslash ((t (:foreground "darkred"))))
+ '(font-lock-regexp-grouping-construct ((t (:foreground "darkred"))))
+ '(font-lock-string-face ((t (:foreground "darkcyan"))))
+ '(font-lock-type-face ((t (:foreground "darkblue" :weight bold))))
+ '(font-lock-variable-name-face ((t (:foreground "darkmagenta"))))
+ '(font-lock-warning-face ((t (:background "darkred"))))
  )
 
 (custom-set-variables
