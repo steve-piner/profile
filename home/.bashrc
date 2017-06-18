@@ -76,18 +76,18 @@ if [ "$color_prompt" = yes ]; then
     PATH_COLOUR='01;37;44'
     case "$HOSTNAME" in
         lovelace|julia|obrien)
-            # White text on green
-            HOST_COLOUR='01;37;42'
+            # Bold white text on green
+            HOST_COLOUR='01;97;42'
             ;;
         prole|pustule|morris|branzdevww01|leone|levinson)
-            # White text on blue
-            HOST_COLOUR='01;37;44'
-            # Yellow text on black
-            PATH_COLOUR='01;33;40'
+            # Bold white text on blue
+            HOST_COLOUR='01;97;44'
+            # Bold yellow text on black
+            PATH_COLOUR='01;93;40'
             ;;
         *)
-            # White text on red
-            HOST_COLOUR='01;37;41'
+            # Bold white text on red
+            HOST_COLOUR='01;97;41'
             ;;
     esac
     PS1='${debian_chroot:+($debian_chroot)}\[\033['$HOST_COLOUR'm\]\u@\h:\[\033[00m\]\[\033['$PATH_COLOUR'm\]\w\$ \[\033[00m\] '
