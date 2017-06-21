@@ -184,7 +184,19 @@ fi
 
 # Start an SSH Agent unless there is one already.
 if [ "$SSH_AUTH_SOCK" == "" ]; then
-	eval $(ssh-agent)
+    agent_dir="$HOME/local/var/ssh-agent"
+    # Find one of my existing agents.
+    # Get the last one, as it is more likely to have an environment file.
+    agent_pid=$(pgrep -u $USER ssh-agent | tail -n 1)
+    if [ "$agent_pid" == "" ] || [ ! -f "$agent_dir/env.$agent_pid" ]; then
+        mkdir -p "$agent_dir"
+        env_file=$(mktemp -p "$agent_dir")
+        ssh-agent > $env_file
+        source $env_file
+        mv $env_file "$agent_dir/env.$SSH_AGENT_PID"
+    else
+        source "$agent_dir/env.$agent_pid"
+    fi
 fi
 
 # Flash the background until a key is pressed.
