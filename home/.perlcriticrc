@@ -6,7 +6,7 @@ allow_with_category_restriction = 1
 
 [Variables::ProhibitPunctuationVars]
 # $0, $! - I don't think of as obscure (anymore?).
-allow = $0 $!
+allow = $0 $! $@
 
 [InputOutput::RequireCheckedSyscalls]
 functions = :builtins
