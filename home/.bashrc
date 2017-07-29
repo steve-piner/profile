@@ -56,7 +56,7 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# Face boxes declare this terminal, but doesn't know how to support it.
+# Face boxes declare this terminal, but don't know how to support it.
 if [ "$TERM" = xterm-256color ]; then
     export TERM=xterm-color
 fi
@@ -66,20 +66,13 @@ case "$TERM" in
     xterm-color) color_prompt=yes;;
 esac
 
-# uncomment for a colored prompt, if the terminal has the capability; turned
-# off by default to not distract the user: the focus in a terminal window
-# should be on the output of commands, not on the prompt
-force_color_prompt=yes
-
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-        # We have color support; assume it's compliant with Ecma-48
-        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-        # a case would tend to support setf rather than setaf.)
-        color_prompt=yes
-    else
-        color_prompt=
-    fi
+if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
+    # We have color support; assume it's compliant with Ecma-48
+    # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+    # a case would tend to support setf rather than setaf.)
+    color_prompt=yes
+else
+    color_prompt=
 fi
 
 if [ "$color_prompt" = yes ]; then
@@ -138,11 +131,11 @@ fi
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
 fi
 
 # Add ~/local/bin to the path.
@@ -199,14 +192,16 @@ if [ "$SSH_AUTH_SOCK" == "" ]; then
     # Find one of my existing agents.
     # Get the last one, as it is more likely to have an environment file.
     agent_pid=$(pgrep -u $USER ssh-agent | tail -n 1)
-    if [ "$agent_pid" == "" ] || [ ! -f "$agent_dir/env.$agent_pid" ]; then
+    # Include $USER so sudo doesn't screw up the agents.
+    if [ "$agent_pid" == "" ] || [ ! -f "$agent_dir/env.$USER.$agent_pid" ]
+    then
         mkdir -p "$agent_dir"
         env_file=$(mktemp -p "$agent_dir")
         ssh-agent > $env_file
         source $env_file
-        mv $env_file "$agent_dir/env.$SSH_AGENT_PID"
+        mv $env_file "$agent_dir/env.$USER.$SSH_AGENT_PID"
     else
-        source "$agent_dir/env.$agent_pid"
+        source "$agent_dir/env.$USER.$agent_pid"
     fi
 fi
 
