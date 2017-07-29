@@ -90,7 +90,7 @@ if [ "$color_prompt" = yes ]; then
             # Bold white text on green
             HOST_COLOUR='01;97;42'
             ;;
-        prole|pustule|morris|branzdevww01|leone|levinson)
+        prole|pustule|morris|branzdevww01|leone|levinson|haynes)
             # Bold white text on blue
             HOST_COLOUR='01;97;44'
             # Bold yellow text on black
