@@ -144,6 +144,8 @@ if [ -d "$HOME/local/bin" ]; then
 fi
 
 # Perlbrew
+# To initialise, set PERLBREW_ROOT as below and run perlbrew init to
+# create the directory.
 if [ -f /usr/bin/perlbrew ] && [ -e $HOME/local/perlbrew ]; then
     export PERLBREW_ROOT=$HOME/local/perlbrew
     source ${PERLBREW_ROOT}/etc/bashrc
