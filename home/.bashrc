@@ -167,10 +167,6 @@ fi
 # Now done with a startup application.
 #xmodmap -e 'remove mod5 = Alt_R'
 
-# Disable the overlay scrollbar
-# Now done with dconf-editor, so don't need the line below
-#export GTK_OVERLAY_SCROLLING=0
-
 ## Include Drush bash customizations.
 #if [ -f "/home/steve/.drush/drush.bashrc" ] ; then
 #  source /home/steve/.drush/drush.bashrc
