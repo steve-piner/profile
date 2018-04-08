@@ -144,6 +144,8 @@ if [ "$color_prompt" = yes ]; then
         esac
     fi
 
+    HOST_COLOUR=00
+    PATH_COLOUR='01;37;44'
     case "$ENVIRONMENT" in
         safe)
             # Bold white text on green
