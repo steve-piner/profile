@@ -14,22 +14,22 @@ require 'sys/ioctl.ph';
 
 # Map hostnames to modes.
 my %hostname_zone = (
-    map({ $_ => 'dev' } qw(
-        dev-servers
-    )),
-    map({ $_ => 'qa' } qw(
-        qa-servers
-    )),
-    map({ $_ => 'prod' } qw(
-        prod-servers
-    )),
+#    map({ $_ => 'safe' } qw(
+#        safe servers - green prompt
+#    )),
+#    map({ $_ => 'caution' } qw(
+#        caution servers - blue prompt
+#    )),
+#    map({ $_ => 'live' } qw(
+#        live servers - red prompt
+#    )),
 );
 
 my %network_zone = (
-    '192.168/16' => 'dev',
-    '172.16/12' => 'qa',
-    '10/8' => 'dev',
-    '0/0' => 'prod',
+#    '192.168/16' => 'safe',
+#    '172.16/12' => 'caution',
+#    '10/8' => 'safe',
+#    '0/0' => 'live',
 );
 
 #use Data::Dump 'dump';
