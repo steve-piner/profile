@@ -48,6 +48,57 @@ shopt -s checkwinsize
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
 #shopt -s globstar
+# Set up PATH
+
+# Add ~/local/bin to the path.
+if [ -d "$HOME/local/bin" ]; then
+    export PATH="$HOME/local/bin:$PATH"
+fi
+
+# Perlbrew
+# To initialise, set PERLBREW_ROOT as below and run perlbrew init to
+# create the directory.
+if [ -f /usr/bin/perlbrew ] && [ -e $HOME/local/perlbrew ]; then
+    export PERLBREW_ROOT=$HOME/local/perlbrew
+    source ${PERLBREW_ROOT}/etc/bashrc
+fi
+
+# Perl local::lib
+if [ -d "$HOME/local/lib/perl5" ]; then
+    PATH="$HOME/local/lib/perl5/bin${PATH+:}${PATH}"; export PATH;
+    PERL5LIB="$HOME/local/lib/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"; export PERL5LIB;
+    PERL_LOCAL_LIB_ROOT="$HOME/local/lib/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"; export PERL_LOCAL_LIB_ROOT;
+    PERL_MB_OPT="--install_base \"$HOME/local/lib/perl5\""; export PERL_MB_OPT;
+    PERL_MM_OPT="INSTALL_BASE=$HOME/local/lib/perl5"; export PERL_MM_OPT;
+fi
+
+# Rakudobrew
+if [ -d "$HOME/.rakudobrew/bin" ]; then
+    export "PATH=$HOME/.rakudobrew/bin:$PATH"
+fi
+
+# Remove the magic behaviour that makes right-alt differ from left-alt.
+# Now done with a startup application.
+#xmodmap -e 'remove mod5 = Alt_R'
+
+# Disable the overlay scrollbar
+# Now done with dconf-editor, so don't need the line below
+#export GTK_OVERLAY_SCROLLING=0
+
+## Include Drush bash customizations.
+#if [ -f "/home/steve/.drush/drush.bashrc" ] ; then
+#  source /home/steve/.drush/drush.bashrc
+#fi
+
+# Include Drush completion.
+if [ -f "/home/steve/.drush/drush.complete.sh" ] ; then
+  source /home/steve/.drush/drush.complete.sh
+fi
+
+## Include Drush prompt customizations.
+#if [ -f "/home/steve/.drush/drush.prompt.sh" ] ; then
+#  source /home/steve/.drush/drush.prompt.sh
+#fi
 
 # SP: Removed lesspipe (file unpacking for less)
 
@@ -76,14 +127,29 @@ else
 fi
 
 if [ "$color_prompt" = yes ]; then
-    HOST_COLOUR=00
-    PATH_COLOUR='01;37;44'
-    case "$HOSTNAME" in
-        lovelace|julia|obrien)
+    ENVIRONMENT=
+    if which prompt-environment > /dev/null; then
+        ENVIRONMENT=$(prompt-environment)
+    else
+        case "$HOSTNAME" in
+            lovelace|julia|obrien)
+                ENVIRONMENT=safe
+                ;;
+            prole|pustule|morris|branzdevww01|leone|levinson|haynes)
+                ENVIRONMENT=caution
+                ;;
+            *)
+                ENVIRONMENT=live
+                ;;
+        esac
+    fi
+
+    case "$ENVIRONMENT" in
+        safe)
             # Bold white text on green
             HOST_COLOUR='01;97;42'
             ;;
-        prole|pustule|morris|branzdevww01|leone|levinson|haynes)
+        caution)
             # Bold white text on blue
             HOST_COLOUR='01;97;44'
             # Bold yellow text on black
@@ -94,6 +160,7 @@ if [ "$color_prompt" = yes ]; then
             HOST_COLOUR='01;97;41'
             ;;
     esac
+
     PS1='${debian_chroot:+($debian_chroot)}\[\033['$HOST_COLOUR'm\]\u@\h:\[\033[00m\]\[\033['$PATH_COLOUR'm\]\w\$ \[\033[00m\] '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
@@ -138,52 +205,6 @@ if ! shopt -oq posix; then
     fi
 fi
 
-# Add ~/local/bin to the path.
-if [ -d "$HOME/local/bin" ]; then
-    export PATH="$HOME/local/bin:$PATH"
-fi
-
-# Perlbrew
-# To initialise, set PERLBREW_ROOT as below and run perlbrew init to
-# create the directory.
-if [ -f /usr/bin/perlbrew ] && [ -e $HOME/local/perlbrew ]; then
-    export PERLBREW_ROOT=$HOME/local/perlbrew
-    source ${PERLBREW_ROOT}/etc/bashrc
-fi
-
-# Perl local::lib
-if [ -d "$HOME/local/lib/perl5" ]; then
-    PATH="$HOME/local/lib/perl5/bin${PATH+:}${PATH}"; export PATH;
-    PERL5LIB="$HOME/local/lib/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"; export PERL5LIB;
-    PERL_LOCAL_LIB_ROOT="$HOME/local/lib/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"; export PERL_LOCAL_LIB_ROOT;
-    PERL_MB_OPT="--install_base \"$HOME/local/lib/perl5\""; export PERL_MB_OPT;
-    PERL_MM_OPT="INSTALL_BASE=$HOME/local/lib/perl5"; export PERL_MM_OPT;
-fi
-
-# Rakudobrew
-if [ -d "$HOME/.rakudobrew/bin" ]; then
-    export "PATH=$HOME/.rakudobrew/bin:$PATH"
-fi
-
-# Remove the magic behaviour that makes right-alt differ from left-alt.
-# Now done with a startup application.
-#xmodmap -e 'remove mod5 = Alt_R'
-
-## Include Drush bash customizations.
-#if [ -f "/home/steve/.drush/drush.bashrc" ] ; then
-#  source /home/steve/.drush/drush.bashrc
-#fi
-
-# Include Drush completion.
-if [ -f "/home/steve/.drush/drush.complete.sh" ] ; then
-  source /home/steve/.drush/drush.complete.sh
-fi
-
-## Include Drush prompt customizations.
-#if [ -f "/home/steve/.drush/drush.prompt.sh" ] ; then
-#  source /home/steve/.drush/drush.prompt.sh
-#fi
-
 # Start an SSH Agent unless there is one already.
 if [ "$SSH_AUTH_SOCK" == "" ]; then
     agent_dir="$HOME/local/var/ssh-agent"
@@ -213,5 +234,3 @@ flasher () {
         read -s -n1 -t1 && break
     done
 }
-
-

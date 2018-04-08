@@ -1,0 +1,88 @@
+#!/usr/bin/perl
+# Created on 01-Apr-2018 by Steve Piner
+use v5.22;
+use strict;
+use warnings;
+use utf8;
+use autodie;
+use version; our $VERSION = qv('0.0.1');
+
+use Sys::Hostname;
+use Socket 'inet_ntoa', 'PF_INET', 'SOCK_STREAM';
+use Net::IP;
+require 'sys/ioctl.ph';
+
+# Map hostnames to modes.
+my %hostname_zone = (
+    map({ $_ => 'dev' } qw(
+        dev-servers
+    )),
+    map({ $_ => 'qa' } qw(
+        qa-servers
+    )),
+    map({ $_ => 'prod' } qw(
+        prod-servers
+    )),
+);
+
+my %network_zone = (
+    '192.168/16' => 'dev',
+    '172.16/12' => 'qa',
+    '10/8' => 'dev',
+    '0/0' => 'prod',
+);
+
+#use Data::Dump 'dump';
+#print dump(\%hostname_zone);
+
+my $hostname = hostname;
+
+if (exists $hostname_zone{$hostname}) {
+    say $hostname_zone{$hostname};
+    exit;
+}
+
+# Determine by network
+
+# All interfaces bar localhost.
+my $dir;
+opendir $dir, '/sys/class/net';
+my @interfaces = grep{!m{^(?:\.\.?|lo\d*)$}} readdir $dir;
+closedir $dir;
+
+# An IP address on each interface, if possible. Ideally this would be all IP
+# addresses on the machine, by multiple IP addresses on an interface will not
+# be picked up. This is a limitation.
+my @ips;
+for (@interfaces) {
+    my $iface = $_;
+    my $socket;
+    socket($socket, PF_INET, SOCK_STREAM, (getprotobyname 'tcp')[2])
+        or die "unable to create a socket: $!\n";
+    my $buf = pack('a256', $iface);
+    if (ioctl($socket, SIOCGIFADDR(), $buf)
+        and (my @address = unpack('x20 C4', $buf))
+    ) {
+        push @ips, Net::IP->new(join('.', @address));
+    }
+}
+
+# Find the best fitting network.
+my $prefix = 0;
+my ($best_network, $range);
+foreach my $network (keys %network_zone) {
+    $range = Net::IP->new($network);
+    if ($prefix < $range->prefixlen) {
+        for my $ip (@ips) {
+            if ($range->overlaps($ip) == $IP_B_IN_A_OVERLAP) {
+                $prefix = $range->prefixlen;
+                $best_network = $network;
+            }
+        }
+    }
+}
+
+if ($best_network and exists $network_zone{$best_network}) {
+    say $network_zone{$best_network};
+}
+exit;
