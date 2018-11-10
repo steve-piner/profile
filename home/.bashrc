@@ -171,7 +171,14 @@ if [ "$color_prompt" = yes ]; then
             ;;
     esac
 
-    PS1='${debian_chroot:+($debian_chroot)}\[\033['$HOST_COLOUR'm\]\u@\h:\[\033['$PATH_COLOUR'm\]\w\$ \[\033[00m\] '
+    if [ "$SUDO_USER" = "" ]; then
+        USER_COLOUR=$HOST_COLOUR
+    else
+        # Bright white on cyan
+        USER_COLOUR='97;46'
+    fi
+
+    PS1='${debian_chroot:+($debian_chroot)}\[\033['$USER_COLOUR'm\]\u\[\033['$HOST_COLOUR'm\]@\h:\[\033['$PATH_COLOUR'm\]\w\$ \[\033[00m\] '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
