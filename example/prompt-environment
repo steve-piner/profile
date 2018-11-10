@@ -1,4 +1,26 @@
 #!/usr/bin/perl
+#
+# Determines which environment the script is being run in, displaying the
+# result on stdout.
+#
+# Configuration required:
+# %hostname_zone - maps hostnames to environments, e.g.
+#     %hostname_zone = (
+#         mydevserver => 'safe',
+#         production  => 'warning',
+#     );
+# %network_zone - maps CIDR ranges to environments
+#     %network_zone = (
+#         '192.168.1/24' => 'safe',
+#         '192.168/16'   => 'warning',
+#         '0/0'          => 'dangerous',
+#     );
+# If a hostname matches exactly, the associated environment will be used.
+# If not, then if multiple networks match, the most specific network will be
+# used.
+#
+# The supported environments are defined in the .bashrc file
+#
 # Created on 01-Apr-2018 by Steve Piner
 use v5.22;
 use strict;
@@ -32,9 +54,6 @@ my %network_zone = (
 #    '0/0' => 'live',
 );
 
-#use Data::Dump 'dump';
-#print dump(\%hostname_zone);
-
 my $hostname = hostname;
 
 if (exists $hostname_zone{$hostname}) {
@@ -42,7 +61,7 @@ if (exists $hostname_zone{$hostname}) {
     exit;
 }
 
-# Determine by network
+# Determine environment by network
 
 # All interfaces bar localhost.
 my $dir;
@@ -51,7 +70,7 @@ my @interfaces = grep{!m{^(?:\.\.?|lo\d*)$}} readdir $dir;
 closedir $dir;
 
 # An IP address on each interface, if possible. Ideally this would be all IP
-# addresses on the machine, by multiple IP addresses on an interface will not
+# addresses on the machine, but multiple IP addresses on an interface will not
 # be picked up. This is a limitation.
 my @ips;
 for (@interfaces) {
@@ -86,3 +105,4 @@ if ($best_network and exists $network_zone{$best_network}) {
     say $network_zone{$best_network};
 }
 exit;
+

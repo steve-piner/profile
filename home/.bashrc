@@ -145,25 +145,33 @@ if [ "$color_prompt" = yes ]; then
     fi
 
     HOST_COLOUR=00
-    PATH_COLOUR='01;37;44'
+    PATH_COLOUR='97;44'
     case "$ENVIRONMENT" in
         safe)
-            # Bold white text on green
-            HOST_COLOUR='01;97;42'
+            # Bright white text on green
+            HOST_COLOUR='97;42'
+            ;;
+        test)
+            # Bright white text on purple
+            HOST_COLOUR='97;45'
+            ;;
+        uat)
+            # Bright white on yellow
+            HOST_COLOUR='97;43'
             ;;
         caution)
-            # Bold white text on blue
-            HOST_COLOUR='01;97;44'
-            # Bold yellow text on black
-            PATH_COLOUR='01;93;40'
+            # Bright white text on blue
+            HOST_COLOUR='97;44'
+            # Bright yellow text on black
+            PATH_COLOUR='93;40'
             ;;
         *)
-            # Bold white text on red
-            HOST_COLOUR='01;97;41'
+            # Bright white text on red
+            HOST_COLOUR='97;41'
             ;;
     esac
 
-    PS1='${debian_chroot:+($debian_chroot)}\[\033['$HOST_COLOUR'm\]\u@\h:\[\033[00m\]\[\033['$PATH_COLOUR'm\]\w\$ \[\033[00m\] '
+    PS1='${debian_chroot:+($debian_chroot)}\[\033['$HOST_COLOUR'm\]\u@\h:\[\033['$PATH_COLOUR'm\]\w\$ \[\033[00m\] '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
