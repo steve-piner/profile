@@ -251,3 +251,8 @@ flasher () {
         read -s -n1 -t1 && break
     done
 }
+
+if [ ~/.bashrc -ot ~/unix-profile/home/.bashrc ]; then
+	echo -e '\e[1;93;40m Updated profile available \e[0m'
+	echo 'To update, run: cd unix-profile && ./install.pl'
+fi
