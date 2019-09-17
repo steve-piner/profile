@@ -100,6 +100,14 @@ fi
 #  source /home/steve/.drush/drush.prompt.sh
 #fi
 
+# NVM - Node Version Manager
+# https://github.com/nvm-sh/nvm
+export NVM_DIR="$HOME/.nvm"
+# This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# This loads nvm bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
 # SP: Removed lesspipe (file unpacking for less)
 
 # set variable identifying the chroot you work in (used in the prompt below)
