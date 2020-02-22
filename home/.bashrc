@@ -64,13 +64,24 @@ if [ -f /usr/bin/perlbrew ] && [ -e $HOME/local/perlbrew ]; then
 fi
 
 # Perl local::lib
-if [ -d "$HOME/local/lib/perl5" ]; then
-    PATH="$HOME/local/lib/perl5/bin${PATH+:}${PATH}"; export PATH;
-    PERL5LIB="$HOME/local/lib/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"; export PERL5LIB;
-    PERL_LOCAL_LIB_ROOT="$HOME/local/lib/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"; export PERL_LOCAL_LIB_ROOT;
-    PERL_MB_OPT="--install_base \"$HOME/local/lib/perl5\""; export PERL_MB_OPT;
-    PERL_MM_OPT="INSTALL_BASE=$HOME/local/lib/perl5"; export PERL_MM_OPT;
+# Do not enable local::lib if perlbrew detected.
+# Having a common area for modules across multiple versions of Perl can cause
+# modules that have XS components to become mismatched, leading to crashes.
+if [ ! -e $HOME/local/perlbrew ] &&  [ -d "$HOME/local/lib/perl5" ]; then
+    enable_local_lib
 fi
+
+enable_local_lib() {
+    if [ -d "$HOME/local/lib/perl5" ]; then
+        PATH="$HOME/local/lib/perl5/bin${PATH+:}${PATH}"; export PATH;
+        PERL5LIB="$HOME/local/lib/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"; export PERL5LIB;
+        PERL_LOCAL_LIB_ROOT="$HOME/local/lib/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"; export PERL_LOCAL_LIB_ROOT;
+        PERL_MB_OPT="--install_base \"$HOME/local/lib/perl5\""; export PERL_MB_OPT;
+        PERL_MM_OPT="INSTALL_BASE=$HOME/local/lib/perl5"; export PERL_MM_OPT;
+    else
+        echo 'local::lib not configured; could not find ~/local/lib/perl5'
+    fi
+}
 
 # Rakudobrew
 if [ -d "$HOME/.rakudobrew/bin" ]; then
