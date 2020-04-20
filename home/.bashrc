@@ -245,8 +245,9 @@ fi
 if [ "$SSH_AUTH_SOCK" == "" ]; then
     agent_dir="$HOME/local/var/ssh-agent"
     # Find one of my existing agents.
-    # Get the last one, as it is more likely to have an environment file.
-    agent_pid=$(pgrep -u $USER ssh-agent | tail -n 1)
+    # Get the newest one with parent pid 1 (gnome-keyring-daemon also runs an
+    # ssh-agent but we can't hook into it)
+    agent_pid=$(pgrep -P 1 -n -u $USER ssh-agent)
     # Include $USER so sudo doesn't screw up the agents.
     if [ "$agent_pid" == "" ] || [ ! -f "$agent_dir/env.$USER.$agent_pid" ]
     then
