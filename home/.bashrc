@@ -265,9 +265,20 @@ fi
 # Use for indicating a task is complete: sleep 3600; flasher
 flasher () {
     while true; do
-        printf \\e[?5h
+        printf "\e[?5h"
         sleep 0.1
-        printf \\e[?5l
+        printf "\e[?5l"
         read -s -n1 -t1 && break
     done
 }
+
+# If directory finding script is available, create 'd' function to use
+# it.
+if [ -f $HOME/local/bin/dir-match.pl ]; then
+    d () {
+        match=$(perl $HOME/local/bin/dir-match.pl $*)
+        if [ ! -z "$match" ]; then
+            cd "$match"
+        fi
+    }
+fi
