@@ -86,7 +86,8 @@ sub transfer {
 
     say "Transfer to $_";
 
-    system qw[rsync -av ./],
+    my $status = system qw[rsync -av ./],
         "$_:unix-profile",
         qw[--exclude=/.git    --exclude=/backup --exclude=/servers.txt --delete];
+    return $status == 0;
 }
