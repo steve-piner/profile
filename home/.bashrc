@@ -282,3 +282,10 @@ if [ -f $HOME/local/bin/dir-match.pl ]; then
         fi
     }
 fi
+
+#  ~/unix-profile/.installed should be removed by a push from a remote
+#  server, which likely indicates an update.
+if [ ! -e $HOME/unix-profile/.installed ]; then
+    echo -e '\e[97;42m There is a unix-profile update to apply \e[0m'
+fi
+

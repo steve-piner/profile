@@ -88,6 +88,6 @@ sub transfer {
 
     my $status = system qw[rsync -av ./],
         "$_:unix-profile",
-        qw[--exclude=/.git    --exclude=/backup --exclude=/servers.txt --delete];
+        qw[--exclude=/.git --exclude=/backup --exclude=/servers.txt --delete];
     return $status == 0;
 }

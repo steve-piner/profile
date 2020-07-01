@@ -72,16 +72,18 @@ sub update {
     return;
 }
 
-my ($help, $ok, $default_source, $default_dest, $default_backup);
+my ($help, $ok, $default_source, $default_dest, $default_backup, $install_flag, $default_flag);
 
-$source_dir = $default_source = realpath dirname($0) . '/home';
-$dest_dir   = $default_dest   = $ENV{HOME};
-$backup_dir = $default_backup = realpath dirname($0) . '/backup';
+$source_dir   = $default_source = realpath dirname($0) . '/home';
+$dest_dir     = $default_dest   = $ENV{HOME};
+$backup_dir   = $default_backup = realpath dirname($0) . '/backup';
+$install_flag = $default_flag   = realpath dirname($0) . '/.installed';
 
 $ok = GetOptions(
     'source=s' => \$source_dir,
     'dest=s'   => \$dest_dir,
     'backup=s' => \$backup_dir,
+    'flag=s'   => \$install_flag,
     'help!'    => \$help,
 );
 
@@ -99,6 +101,8 @@ Options
                     Default: $default_dest
     --backup <dir>  Directory for file backups.
                     Default: $default_backup
+    --flag <file>   Installation flag file
+                    Default: $default_flag
     --help          This message.
 HELP
     exit 1;
@@ -109,3 +113,8 @@ for ($source_dir, $dest_dir, $backup_dir) {
 }
 
 find({wanted => \&update, no_chdir => 1}, $source_dir);
+
+# Absence of this file indicates an update on remote (push-ed)
+# servers.
+open my $fh, '>', $default_flag;
+close $fh;
