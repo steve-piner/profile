@@ -47,7 +47,7 @@ my @servers;
 
 eval {
     open my $fh, '<', $servers_file;
-    @servers = map {chomp} <$fh>;
+    @servers = map {chomp; $_} <$fh>;
     close $fh;
 };
 my %already_saved = map {$_ => 1} @servers;
