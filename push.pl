@@ -44,6 +44,7 @@ HELP
 my $dir = abs_path(getcwd . '/' . dirname $0);
 my $servers_file = $dir . '/servers.txt';
 my @servers;
+my $installed;
 
 eval {
     open my $fh, '<', $servers_file;
@@ -55,6 +56,13 @@ my %already_saved = map {$_ => 1} @servers;
 if ($list) {
     say for @servers;
     exit;
+}
+
+# If already installed, move the flag to a temporary location to avoid
+# marking all targets as already installed...
+$installed = -f '.installed';
+if ($installed) {
+    system qw[mv .installed backup];
 }
 
 if ($all) {
@@ -75,6 +83,9 @@ if ($track) {
     close $fh;
 }
 
+if ($installed) {
+    system qw[mv backup/.installed .];
+}
 
 
 sub transfer {
