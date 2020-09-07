@@ -35,8 +35,12 @@ umask 002
 # Don't attempt to complete when I hit tab on an empty command line.
 shopt -s no_empty_cmd_completion
 
+# Preferred editor
+export EDITOR=emacs
+
 # Go figure. I've got used to it.
 export SVN_EDITOR=vim
+export GIT_EDITOR=vim
 
 # append to the history file, don't overwrite it
 shopt -s histappend
