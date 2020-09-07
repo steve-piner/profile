@@ -38,9 +38,13 @@ shopt -s no_empty_cmd_completion
 # Preferred editor
 export EDITOR=emacs
 
-# Go figure. I've got used to it.
-export SVN_EDITOR=vim
-export GIT_EDITOR=vim
+for editor in vim vim.tiny vi emacs; do
+    if which $editor > /dev/null; then
+        export SVN_EDITOR=$editor
+        export GIT_EDITOR=$editor
+        break
+    fi
+done
 
 # append to the history file, don't overwrite it
 shopt -s histappend
