@@ -72,12 +72,6 @@ if [ -f /usr/bin/perlbrew ] && [ -e $HOME/local/perlbrew ]; then
 fi
 
 # Perl local::lib
-# Do not enable local::lib if perlbrew detected.
-# Having a common area for modules across multiple versions of Perl can cause
-# modules that have XS components to become mismatched, leading to crashes.
-if [ ! -e $HOME/local/perlbrew ] &&  [ -d "$HOME/local/lib/perl5" ]; then
-    enable_local_lib
-fi
 
 enable_local_lib() {
     if [ -d "$HOME/local/lib/perl5" ]; then
@@ -90,6 +84,13 @@ enable_local_lib() {
         echo 'local::lib not configured; could not find ~/local/lib/perl5'
     fi
 }
+
+# Do not enable local::lib if perlbrew detected.
+# Having a common area for modules across multiple versions of Perl can cause
+# modules that have XS components to become mismatched, leading to crashes.
+if [ ! -e $HOME/local/perlbrew ] &&  [ -d "$HOME/local/lib/perl5" ]; then
+    enable_local_lib
+fi
 
 # Rakudobrew
 if [ -d "$HOME/.rakudobrew/bin" ]; then
