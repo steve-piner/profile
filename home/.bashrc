@@ -35,8 +35,16 @@ umask 002
 # Don't attempt to complete when I hit tab on an empty command line.
 shopt -s no_empty_cmd_completion
 
-# Go figure. I've got used to it.
-export SVN_EDITOR=vim
+# Preferred editor
+export EDITOR=emacs
+
+for editor in vim vim.tiny vi emacs; do
+    if which $editor > /dev/null; then
+        export SVN_EDITOR=$editor
+        export GIT_EDITOR=$editor
+        break
+    fi
+done
 
 # append to the history file, don't overwrite it
 shopt -s histappend
@@ -64,13 +72,24 @@ if [ -f /usr/bin/perlbrew ] && [ -e $HOME/local/perlbrew ]; then
 fi
 
 # Perl local::lib
-if [ -d "$HOME/local/lib/perl5" ]; then
-    PATH="$HOME/local/lib/perl5/bin${PATH+:}${PATH}"; export PATH;
-    PERL5LIB="$HOME/local/lib/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"; export PERL5LIB;
-    PERL_LOCAL_LIB_ROOT="$HOME/local/lib/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"; export PERL_LOCAL_LIB_ROOT;
-    PERL_MB_OPT="--install_base \"$HOME/local/lib/perl5\""; export PERL_MB_OPT;
-    PERL_MM_OPT="INSTALL_BASE=$HOME/local/lib/perl5"; export PERL_MM_OPT;
+# Do not enable local::lib if perlbrew detected.
+# Having a common area for modules across multiple versions of Perl can cause
+# modules that have XS components to become mismatched, leading to crashes.
+if [ ! -e $HOME/local/perlbrew ] &&  [ -d "$HOME/local/lib/perl5" ]; then
+    enable_local_lib
 fi
+
+enable_local_lib() {
+    if [ -d "$HOME/local/lib/perl5" ]; then
+        PATH="$HOME/local/lib/perl5/bin${PATH+:}${PATH}"; export PATH;
+        PERL5LIB="$HOME/local/lib/perl5/lib/perl5${PERL5LIB+:}${PERL5LIB}"; export PERL5LIB;
+        PERL_LOCAL_LIB_ROOT="$HOME/local/lib/perl5${PERL_LOCAL_LIB_ROOT+:}${PERL_LOCAL_LIB_ROOT}"; export PERL_LOCAL_LIB_ROOT;
+        PERL_MB_OPT="--install_base \"$HOME/local/lib/perl5\""; export PERL_MB_OPT;
+        PERL_MM_OPT="INSTALL_BASE=$HOME/local/lib/perl5"; export PERL_MM_OPT;
+    else
+        echo 'local::lib not configured; could not find ~/local/lib/perl5'
+    fi
+}
 
 # Rakudobrew
 if [ -d "$HOME/.rakudobrew/bin" ]; then
@@ -99,6 +118,14 @@ fi
 #if [ -f "/home/steve/.drush/drush.prompt.sh" ] ; then
 #  source /home/steve/.drush/drush.prompt.sh
 #fi
+
+# NVM - Node Version Manager
+# https://github.com/nvm-sh/nvm
+export NVM_DIR="$HOME/.nvm"
+# This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# This loads nvm bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # SP: Removed lesspipe (file unpacking for less)
 
@@ -226,8 +253,9 @@ fi
 if [ "$SSH_AUTH_SOCK" == "" ]; then
     agent_dir="$HOME/local/var/ssh-agent"
     # Find one of my existing agents.
-    # Get the last one, as it is more likely to have an environment file.
-    agent_pid=$(pgrep -u $USER ssh-agent | tail -n 1)
+    # Get the newest one with parent pid 1 (gnome-keyring-daemon also runs an
+    # ssh-agent but we can't hook into it)
+    agent_pid=$(pgrep -P 1 -n -u $USER ssh-agent)
     # Include $USER so sudo doesn't screw up the agents.
     if [ "$agent_pid" == "" ] || [ ! -f "$agent_dir/env.$USER.$agent_pid" ]
     then
@@ -245,14 +273,32 @@ fi
 # Use for indicating a task is complete: sleep 3600; flasher
 flasher () {
     while true; do
-        printf \\e[?5h
+        printf "\e[?5h"
         sleep 0.1
-        printf \\e[?5l
+        printf "\e[?5l"
         read -s -n1 -t1 && break
     done
 }
+
+# If directory finding script is available, create 'd' function to use
+# it.
+if [ -f $HOME/local/bin/dir-match.pl ]; then
+    d () {
+        match=$(perl $HOME/local/bin/dir-match.pl $*)
+        if [ ! -z "$match" ]; then
+            cd "$match"
+        fi
+    }
+fi
+
+#  ~/unix-profile/.installed should be removed by a push from a remote
+#  server, which likely indicates an update.
+if [ ! -e $HOME/unix-profile/.installed ]; then
+    echo -e '\e[97;42m There is a unix-profile update to apply \e[0m'
+fi
 
 if [ ~/.bashrc -ot ~/unix-profile/home/.bashrc ]; then
 	echo -e '\e[1;93;40m Updated profile available \e[0m'
 	echo 'To update, run: cd unix-profile && ./install.pl'
 fi
+
