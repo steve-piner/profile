@@ -2,7 +2,6 @@
 use v5.20;
 use strict;
 use warnings;
-use autodie;
 
 my @active = grep { -d $_ }
     qw[
@@ -51,12 +50,12 @@ while (@ARGV) {
         my @entries;
 
         eval {
-            opendir $dh, $current;
+            opendir $dh, $current or die 'opendir failed';
             @entries = sort grep { !/^\.\.?$/ && /$term_re/ && -d "$current/$_" } readdir $dh;
-            closedir $dh;
+            closedir $dh or die 'closedir failed';
         };
-        if ($@ and $@->isa('autodie::exception')) {
-            die $@ unless $@->matches('opendir');
+        if ($@) {
+            die $@ unless $@ =~ /^opendir/;
         }
 
         # Avoid '//' at the start of paths.
