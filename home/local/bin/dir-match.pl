@@ -4,13 +4,9 @@ use strict;
 use warnings;
 
 my @active = grep { -d $_ }
-    qw[
-          /home/steve
-          /home/webspace
-          /home/library/video
-          /home
-          /
-    ];
+    exists $ENV{DIR_MATCH_DIRS}
+        ? split ':', $ENV{DIR_MATCH_DIRS} 
+        : ($ENV{HOME}, '/');
 
 # One dot - relative to the current directory.
 # Two dots - relative to the parent directory.
