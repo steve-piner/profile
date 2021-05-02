@@ -37,6 +37,11 @@ while (@ARGV) {
         # Out of range - exit, no change.
         last;
     }
+    elsif ($term =~ m{(/\d+)$}) {
+        # "foo/2" "bar" to become "foo" "/2" "bar"
+        unshift @ARGV, $1;
+        substr($term, -length($1)) = '';
+    }
 
     my $term_re = '^' . join('.*?', map {quotemeta} split //, $term);
     $term_re = qr/$term_re/i;
