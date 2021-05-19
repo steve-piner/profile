@@ -303,3 +303,7 @@ if [ ~/.bashrc -ot ~/unix-profile/home/.bashrc ]; then
 	echo 'To update, run: cd unix-profile && ./install.pl'
 fi
 
+# Any local environment changes can be added to this file
+if [ -f $HOME/.local-env ]; then
+    . $HOME/.local-env
+fi
