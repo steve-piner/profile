@@ -28,17 +28,20 @@ use constant BUFFER_SIZE => 1024 * 1024;
 use constant DEBUG => 0;
 
 sub bcopy;
+sub backup;
 
-my ($source_dir, $dest_dir, $backup_dir);
+my ($custom_dir, $source_dir, $dest_dir, $backup_dir);
 
-my ($help, $ok, $default_source, $default_dest, $default_backup, $install_flag, $default_flag);
+my ($help, $ok, $default_custom, $default_source, $default_dest, $default_backup, $install_flag, $default_flag);
 
+$custom_dir   = $default_custom = realpath dirname($0) . '/custom';
 $source_dir   = $default_source = realpath dirname($0) . '/home';
 $dest_dir     = $default_dest   = $ENV{HOME};
 $backup_dir   = $default_backup = realpath dirname($0) . '/backup';
 $install_flag = $default_flag   = realpath dirname($0) . '/.installed';
 
 $ok = GetOptions(
+    'custom=s' => \$custom_dir,
     'source=s' => \$source_dir,
     'dest=s'   => \$dest_dir,
     'backup=s' => \$backup_dir,
@@ -54,6 +57,8 @@ $name - Install unix profile files into profile
 Usage: $name [options]
 
 Options
+    --custom <dir>  Customised source directory.
+                    Default: $default_custom
     --source <dir>  Source directory.
                     Default: $default_source
     --dest <dir>    Destination directory.
@@ -67,31 +72,54 @@ HELP
     exit 1;
 }
 
-for ($source_dir, $dest_dir, $backup_dir) {
+for ($custom_dir, $source_dir, $dest_dir, $backup_dir) {
     $_ .= q[/] unless m{/$};
 }
 
-#find({wanted => \&update, no_chdir => 1}, $source_dir);
-bfind(\&update, $source_dir);
+my %seen_file;
+my @source_dirs = grep {-d $_} ($custom_dir, $source_dir);
+
+for my $update_dir (@source_dirs) {
+    my $update =  sub {
+        my $source = $File::Find::name;
+        return if -d $source;
+    
+        my $dest = $dest_dir . strip_dir($source, $update_dir);
+    
+        if ($seen_file{$dest}) {
+            say STDERR "Overridden $source (found in $custom_dir)";
+        }
+        else {
+            ++$seen_file{$dest};
+            if (-e $dest and bcompare($dest, $source) != 0) {
+                backup $dest;
+            }
+            else {
+                make_path dirname $dest;
+            }
+        
+            bcopy $source, $dest or die "Copy from $source to $dest failed: $!";
+        }
+        return;
+    };
+
+    #find({wanted => \&update, no_chdir => 1}, $source_dir);
+    bfind($update, $update_dir);
+}
 
 # Absence of this file indicates an update on remote (push-ed)
 # servers.
-open my $fh, '>', $default_flag;
+open my $fh, '>', $install_flag;
 close $fh;
 
 exit;
 
-sub dest_from_source($source) {
-    state $source_re;
-    unless ($source_re) {
-        $source_re = q[^] . quotemeta $source_dir;
-        $source_re = qr/$source_re/;
+sub strip_dir($source, $dir) {
+    if (substr($source, 0, length $dir) ne $dir) {
+        croak "$source not within $dir";
     }
-
-    my $dest = $source;
-    if ($dest !~ s/$source_re/$dest_dir/) {
-        croak "$source not within $source_dir";
-    }
+    
+    my $dest = substr($source, length $dir);
 
     return $dest;
 }
@@ -110,28 +138,11 @@ sub backup($source) {
     return;
 }
 
-sub update {
-    my $source = $File::Find::name;
-    return if -d $source;
-
-    my $dest = dest_from_source($source);
-
-    if (-e $dest and bcompare($dest, $source) != 0) {
-        backup $dest;
-    }
-    else {
-        make_path dirname $dest;
-    }
-
-    bcopy $source, $dest or die "Copy from $source to $dest failed: $!";
-    return;
-}
-
 # Poor replacement for File::Find::find (not available in perl-base)
 sub bfind($command, $base_dir) {
     DEBUG and say "bfind($command, $base_dir)";
     my $dh;
-    my @dir_queue = ($base_dir);
+    my @dir_queue = ($base_dir =~ s{/$}{}r);
     while (@dir_queue) {
         my $dir = shift @dir_queue;
         DEBUG and say "bfind opening $dir";
