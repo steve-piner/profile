@@ -10,3 +10,4 @@
 --indent-spaced-block-comments
 --nooutdent-long-quotes
 --opening-token-right
+--space-prototype-paren=0
