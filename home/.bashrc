@@ -159,17 +159,7 @@ if [ "$color_prompt" = yes ]; then
     if which prompt-environment > /dev/null; then
         ENVIRONMENT=$(prompt-environment)
     else
-        case "$HOSTNAME" in
-            lovelace|julia|obrien)
-                ENVIRONMENT=safe
-                ;;
-            prole|pustule|morris|branzdevww01|leone|levinson|haynes)
-                ENVIRONMENT=caution
-                ;;
-            *)
-                ENVIRONMENT=live
-                ;;
-        esac
+        ENVIRONMENT=live
     fi
 
     HOST_COLOUR=00
@@ -292,18 +282,14 @@ if [ -f $HOME/local/bin/dir-match.pl ]; then
     }
 fi
 
+# Any local environment changes can be added to this file
+if [ -f $HOME/.local-env ]; then
+    . $HOME/.local-env
+fi
+
 #  ~/unix-profile/.installed should be removed by a push from a remote
 #  server, which likely indicates an update.
 if [ ! -e $HOME/unix-profile/.installed ]; then
     echo -e '\e[97;42m There is a unix-profile update to apply \e[0m'
-fi
-
-if [ ~/.bashrc -ot ~/unix-profile/home/.bashrc ]; then
-	echo -e '\e[1;93;40m Updated profile available \e[0m'
-	echo 'To update, run: cd unix-profile && ./install.pl'
-fi
-
-# Any local environment changes can be added to this file
-if [ -f $HOME/.local-env ]; then
-    . $HOME/.local-env
+	echo 'To update, run: cd ~/unix-profile && ./install.pl'
 fi
