@@ -1,3 +1,6 @@
+# Line highlight mode.
+(global-hl-line-mode)
+
 ;; Tabs info from http://www.pement.org/emacs_tabs.htm
 (setq-default indent-tabs-mode nil)
 (setq default-tab-width 4)
