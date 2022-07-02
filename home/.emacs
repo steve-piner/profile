@@ -1,4 +1,4 @@
-# Line highlight mode.
+;; Line highlight mode.
 (global-hl-line-mode)
 
 ;; Tabs info from http://www.pement.org/emacs_tabs.htm
