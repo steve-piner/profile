@@ -290,6 +290,11 @@ fi
 # This loads nvm bash_completion
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
+# Rust, cargo (package manager) and rustup (toolchain installer)
+if [ -e $HOME/.cargo/env ]; then
+    . "$HOME/.cargo/env"
+fi
+
 
 #  ~/unix-profile/.installed should be removed by a push from a remote
 #  server, which likely indicates an update.
