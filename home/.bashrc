@@ -291,6 +291,7 @@ fi
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 # Rust, cargo (package manager) and rustup (toolchain installer)
+# https://www.rust-lang.org/tools/install
 if [ -e $HOME/.cargo/env ]; then
     . "$HOME/.cargo/env"
 fi
