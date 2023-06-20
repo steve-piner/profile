@@ -299,7 +299,7 @@ fi
 # Less options. Allow overriding, for environments that don't support
 # these options yet.
 if [ -z "$LESS" ]; then
-    export LESS='--RAW-CONTROL-CHARS --use-color --HILITE-UNREAD --ignore-case'
+    export LESS='--RAW-CONTROL-CHARS --use-color --HILITE-UNREAD --ignore-case --quit-if-one-screen'
 fi
 
 #  ~/unix-profile/.installed should be removed by a push from a remote
