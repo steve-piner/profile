@@ -189,7 +189,7 @@ if [ "$color_prompt" = yes ]; then
     fi
 
 
-    PS1='${debian_chroot:+($debian_chroot)}\[\e[30;97m\e]8;;\D{%A %e %B %Y}\e\\\]\A\[\e]8;;\e\\\] \[\033['$USER_COLOUR'm\]\u\[\033['$HOST_COLOUR'm\]@\h:\[\033['$PATH_COLOUR'm\]\w\$ \[\033[00m\] '
+    PS1='${debian_chroot:+($debian_chroot)}\[\e[48;5;0;97m\e]8;;\D{%A %e %B %Y}\e\\\]\A\[\e]8;;\e\\\] \[\033['$USER_COLOUR'm\]\u\[\033['$HOST_COLOUR'm\]@\h:\[\033['$PATH_COLOUR'm\]\w\$ \[\033[00m\] '
 else
     PS1='\A ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
