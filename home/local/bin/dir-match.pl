@@ -29,15 +29,20 @@ while (@ARGV) {
 
     my $term = shift;
 
-    if ($term =~ m{^/(\d+)$}) {
-        if ($1 > 0 and $1 <= @current) {
+    if ($term =~ m{^/(-?\d+)$}) {
+        if (abs($1) > 0 and abs($1) <= @current) {
+            if ($1 > 0) {
             @active = ($current[$1 - 1]);
+            }
+            else {
+                @active = ($current[$1]);
+            }
             next;
         }
         # Out of range - exit, no change.
         last;
     }
-    elsif ($term =~ m{(/\d+)$}) {
+    elsif ($term =~ m{(/-?\d+)$}) {
         # "foo/2" "bar" to become "foo" "/2" "bar"
         unshift @ARGV, $1;
         substr($term, -length($1)) = '';
