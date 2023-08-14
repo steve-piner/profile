@@ -39,12 +39,39 @@
         markdown-mode
         yaml-mode
         json-mode
-        dumb-jump))
+        dumb-jump
+        flx-ido
+        ivy
+        counsel
+        swiper))
 
 ;; Iterate on packages and install missing ones
 (dolist (pkg my-packages)
   (unless (package-installed-p pkg)
     (package-install pkg)))
+
+;; ---
+
+; https://github.com/lewang/flx
+;(require 'flx-ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+(setq ido-enable-flex-matching t)
+(setq ido-use-faces nil)
+
+;; Ivy completions
+;; https://github.com/abo-abo/swiper
+
+(ivy-mode)
+
+(setq ivy-re-builders-alist
+      '((t . ivy--regex-fuzzy)))
+
+(counsel-mode)
+(global-set-key "\C-s" 'swiper)
+
 
 ;; ---
 
