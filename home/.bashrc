@@ -303,6 +303,17 @@ if [ -z "$LESS" ]; then
     export LESS='--RAW-CONTROL-CHARS --use-color --HILITE-UNREAD --ignore-case --quit-if-one-screen'
 fi
 
+# FZF, if installed
+if [ -f ~/local/src/fzf/bin/fzf ]; then
+    # Setup fzf
+    # ---------
+    if [[ ! "$PATH" == */home/steve/local/src/fzf/bin* ]]; then
+        PATH="${PATH:+${PATH}:}/home/steve/local/src/fzf/bin"
+    fi
+
+    eval "$(fzf --bash)"
+fi
+
 #  ~/unix-profile/.installed should be removed by a push from a remote
 #  server, which likely indicates an update.
 if [ ! -e $HOME/unix-profile/.installed ]; then
