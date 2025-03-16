@@ -312,6 +312,9 @@ if [ -f ~/local/src/fzf/bin/fzf ]; then
     fi
 
     eval "$(fzf --bash)"
+    # FZF clobbers ^T, this is the simple way to stop it.
+    # See https://github.com/junegunn/fzf/issues/546
+    bind '"\C-t": transpose-chars'
 fi
 
 #  ~/unix-profile/.installed should be removed by a push from a remote
