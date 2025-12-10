@@ -233,6 +233,12 @@ if ! shopt -oq posix; then
     fi
 fi
 
+# Ubuntu 25.10 (Questing) doesn't set SSH_AUTH_SOCK correctly.
+# See https://bugs.launchpad.net/ubuntu/+source/openssh/+bug/2125549
+if [ "$SSH_AUTH_SOCK" == "" ] && [ "$XDG_RUNTIME_DIR" != "" ] && [ -S "$XDG_RUNTIME_DIR/gcr/ssh" ]; then
+    export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gcr/ssh
+fi
+
 # Start an SSH Agent unless there is one already.
 if [ "$SSH_AUTH_SOCK" == "" ]; then
     agent_dir="$HOME/local/var/ssh-agent"
