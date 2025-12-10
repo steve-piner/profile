@@ -304,10 +304,10 @@ if [ -z "$LESS" ]; then
 fi
 
 # FZF, if installed
-if [ -f ~/local/src/fzf/bin/fzf ]; then
+if [ -f ~/local/src/fzf/bin/fzf ] || [ -f /usr/bin/fzf ]; then
     # Setup fzf
     # ---------
-    if [[ ! "$PATH" == */home/steve/local/src/fzf/bin* ]]; then
+    if [ -f ~/local/src/fzf/bin/fzf ] && [[ ! "$PATH" == */home/steve/local/src/fzf/bin* ]]; then
         PATH="${PATH:+${PATH}:}/home/steve/local/src/fzf/bin"
     fi
 
