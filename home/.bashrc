@@ -245,7 +245,9 @@ if [ "$SSH_AUTH_SOCK" == "" ]; then
     # Find one of my existing agents.
     # Get the newest one with parent pid 1 (gnome-keyring-daemon also runs an
     # ssh-agent but we can't hook into it)
-    agent_pid=$(pgrep -P 1 -n -u $USER ssh-agent)
+    # This needs reworking - systemd means no PPID 1
+    # Probably check whether existing env.user files are still valid.
+    agent_pid=$(pgrep -x -P 1 -n -u $USER ssh-agent)
     # Include $USER so sudo doesn't screw up the agents.
     if [ "$agent_pid" == "" ] || [ ! -f "$agent_dir/env.$USER.$agent_pid" ]
     then
