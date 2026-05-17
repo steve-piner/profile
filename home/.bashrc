@@ -58,6 +58,12 @@ shopt -s checkwinsize
 #shopt -s globstar
 # Set up PATH
 
+# Add ~/.local/bin to the path.
+# Added first so ~/local/bin takes priority.
+if [ -d "$HOME/.local/bin" ]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
 # Add ~/local/bin to the path.
 if [ -d "$HOME/local/bin" ]; then
     export PATH="$HOME/local/bin:$PATH"
