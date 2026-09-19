@@ -160,42 +160,35 @@ if [ "$color_prompt" = yes ]; then
         ENVIRONMENT=live
     fi
 
-    HOST_COLOUR=00
-    PATH_COLOUR='97;44'
-    case "$ENVIRONMENT" in
-        safe)
-            # Bright white text on green
-            HOST_COLOUR='97;42'
-            ;;
-        test)
-            # Bright white text on purple
-            HOST_COLOUR='97;45'
-            ;;
-        uat)
-            # Bright white on yellow
-            HOST_COLOUR='97;43'
-            ;;
-        caution)
-            # Bright white text on blue
-            HOST_COLOUR='97;44'
-            # Bright yellow text on black
-            PATH_COLOUR='93;40'
-            ;;
-        *)
-            # Bright white text on red
-            HOST_COLOUR='97;41'
-            ;;
-    esac
+    declare -A prompt_themes
+    prompt_themes[safe]='97;42|30;102|30;42'
+    prompt_themes[test]='97;46|30;106|30;46'
+    prompt_themes[qa]='97;43|30;103|30;43'
+    prompt_themes[uat]='97;45|30;105|30;45'
+    prompt_themes[production]='97;41|30;101|97;41'
+    prompt_themes[infrastructure]='97;44|30;104|97;44'
+    prompt_themes[utility]='97;40|30;107|97;47'
+    prompt_themes[third-party]='97;100|30;47|97;100'
+    prompt_themes[caution]='97;43|30;103|30;43'
+    theme=${prompt_themes[$ENVIRONMENT]}
+    if [ "$theme" == '' ]; then
+        theme=${prompt_themes[production]}
+    fi
+    IFS='|'
+    read -ra theme_colours <<< "$theme"
+    time_colour="${theme_colours[0]}"
+    host_colour="${theme_colours[1]}"
+    path_colour="${theme_colours[2]}"
 
-    if [ "$SUDO_USER" = "" ]; then
-        USER_COLOUR=$HOST_COLOUR
-    else
-        # Bright white on cyan
-        USER_COLOUR='97;46'
+    user_colour="$host_colour";
+    if [ "$SUDO_USER" != '' ]; then
+        # Blinking bright yellow on red
+        $user_colour='5;93;41'
     fi
 
+    PS1='${debian_chroot:+($debian_chroot)}\[\e['$time_colour'm\e]8;;\D{%l:%M:%S%p, %A %e %B %Y}\e\\\]\A\[\e]8;;\e\\\] \[\033['$user_colour'm\]\u\[\033[0;'$host_colour'm\]@\h:\[\033['$path_colour'm\]\w\$ \[\033[00m\] '
 
-    PS1='${debian_chroot:+($debian_chroot)}\[\e[48;5;0;97m\e]8;;\D{%l:%M:%S%p, %A %e %B %Y}\e\\\]\A\[\e]8;;\e\\\] \[\033['$USER_COLOUR'm\]\u\[\033['$HOST_COLOUR'm\]@\h:\[\033['$PATH_COLOUR'm\]\w\$ \[\033[00m\] '
+    unset -v prompt_themes time_colour host_colour path_colour user_colour
 else
     PS1='\A ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -242,6 +235,7 @@ fi
 # Ubuntu 25.10 (Questing) doesn't set SSH_AUTH_SOCK correctly.
 # See https://bugs.launchpad.net/ubuntu/+source/openssh/+bug/2125549
 if [ "$SSH_AUTH_SOCK" == "" ] && [ "$XDG_RUNTIME_DIR" != "" ] && [ -S "$XDG_RUNTIME_DIR/gcr/ssh" ]; then
+    echo 'SSH agent workaround still active'
     export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/gcr/ssh
 fi
 
