@@ -188,7 +188,7 @@ if [ "$color_prompt" = yes ]; then
 
     PS1='${debian_chroot:+($debian_chroot)}\[\e['$time_colour'm\e]8;;\D{%l:%M:%S%p, %A %e %B %Y}\e\\\]\A\[\e]8;;\e\\\] \[\033['$user_colour'm\]\u\[\033[0;'$host_colour'm\]@\h:\[\033['$path_colour'm\]\w\$ \[\033[00m\] '
 
-    unset -v prompt_themes time_colour host_colour path_colour user_colour
+    unset -v IFS prompt_themes time_colour host_colour path_colour user_colour
 else
     PS1='\A ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
