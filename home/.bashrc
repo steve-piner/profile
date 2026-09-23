@@ -327,7 +327,10 @@ esac
 
 #  ~/unix-profile/.installed should be removed by a push from a remote
 #  server, which likely indicates an update.
-if [ ! -e $HOME/unix-profile/.installed ]; then
-    echo -e '\e[97;42m There is a unix-profile update to apply \e[0m'
-	echo 'To update, run: cd ~/unix-profile && ./install.pl'
+if [ -e $HOME/unix-profile/update ]; then
+    echo -e '\e[38;2;255;204;50;48;2;0;0;0m ⚠  \e[48;2;255;204;50;38;2;0;0;0m  Applying unix-profile update  \e[0m'
+    echo -e '\e[38;2;124;179;66;48;2;0;0;0m ✔  \e[48;2;124;179;66;38;2;0;0;0m  Update complete               \e[0m'
+    $HOME/unix-profile/update
+    rm -f $HOME/unix-profile/update
+
 fi

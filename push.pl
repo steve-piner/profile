@@ -67,6 +67,15 @@ if ($installed) {
     system qw[mv .installed backup];
 }
 
+# Create 'update' script.
+open my $update_fh, '>', 'update';
+print {$update_fh} << 'UPDATE';
+#!/bin/bash
+perl -e 'exec $] >= 5.022 ? q[./install.pl] : q[./5-10-install.pl]'
+UPDATE
+chmod 0755, $update_fh;
+close $update_fh;
+
 if ($all) {
     transfer($_) for @servers;
 }
@@ -89,6 +98,7 @@ if ($installed) {
     system qw[mv backup/.installed .];
 }
 
+unlink 'update';
 
 sub transfer {
     my ($server) = @_;

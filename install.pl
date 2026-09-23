@@ -112,6 +112,9 @@ for my $update_dir (@source_dirs) {
 open my $fh, '>', $install_flag;
 close $fh;
 
+# Installed. Update no longer required.
+unlink dirname($0) . '/update';
+
 exit;
 
 sub strip_dir($source, $dir) {
