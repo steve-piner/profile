@@ -133,6 +133,7 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
+# Colour prompt - can we have it? (prompt actually set after sourcing .local-env)
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
     xterm-color) color_prompt=yes;;
@@ -146,59 +147,6 @@ if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
 else
     color_prompt=
 fi
-
-if [ "$color_prompt" = yes ]; then
-    ENVIRONMENT=
-    if which prompt-environment > /dev/null; then
-        ENVIRONMENT=$(prompt-environment)
-    else
-        ENVIRONMENT=live
-    fi
-
-    declare -A prompt_themes
-    prompt_themes[safe]='38;2;255;255;255;48;2;27;77;62|38;2;255;255;255;48;2;46;139;87|38;2;255;255;255;48;2;27;77;62'
-    prompt_themes[development]='38;2;255;255;255;48;2;0;95;115|38;2;255;255;255;48;2;10;147;150|38;2;255;255;255;48;2;0;95;115'
-    prompt_themes[test]='38;2;255;255;255;48;2;16;78;139|38;2;255;255;255;48;2;0;139;139|38;2;255;255;255;48;2;16;78;139'
-    prompt_themes[caution]='38;2;255;255;255;48;2;139;69;0|38;2;255;255;255;48;2;217;119;6|38;2;255;255;255;48;2;139;69;0'
-    prompt_themes[qa]='38;2;255;255;255;48;2;180;83;9|38;2;0;0;0;48;2;245;158;11|38;2;255;255;255;48;2;180;83;9'
-    prompt_themes[uat]='38;2;255;255;255;48;2;88;28;135|38;2;255;255;255;48;2;147;51;234|38;2;255;255;255;48;2;88;28;135'
-    prompt_themes[production]='38;2;255;255;255;48;2;127;29;29|38;2;255;255;255;48;2;220;38;38|38;2;255;255;255;48;2;127;29;29'
-    prompt_themes[infrastructure]='38;2;255;255;255;48;2;30;58;138|38;2;255;255;255;48;2;37;99;235|38;2;255;255;255;48;2;30;58;138'
-    prompt_themes[utility]='38;2;255;255;255;48;2;51;65;85|38;2;255;255;255;48;2;100;116;139|38;2;255;255;255;48;2;51;65;85'
-    prompt_themes[third-party]='38;2;255;255;255;48;2;68;64;60|38;2;255;255;255;48;2;120;113;108|38;2;255;255;255;48;2;68;64;60'
-
-    theme=${prompt_themes[$ENVIRONMENT]}
-    if [ "$theme" == '' ]; then
-        theme=${prompt_themes[production]}
-    fi
-    IFS='|'
-    read -ra theme_colours <<< "$theme"
-    time_colour="${theme_colours[0]}"
-    host_colour="${theme_colours[1]}"
-    path_colour="${theme_colours[2]}"
-
-    user_colour="$host_colour";
-    if [ "$SUDO_USER" != '' ]; then
-        # Blinking bright yellow on red
-        $user_colour='5;93;41'
-    fi
-
-    PS1='${debian_chroot:+($debian_chroot)}\[\e['$time_colour'm\e]8;;\D{%l:%M:%S%p, %A %e %B %Y}\e\\\]\A\[\e]8;;\e\\\] \[\033['$user_colour'm\]\u\[\033[0;'$host_colour'm\]@\h:\[\033['$path_colour'm\]\w\$ \[\033[00m\] '
-
-    unset -v IFS prompt_themes time_colour host_colour path_colour user_colour
-else
-    PS1='\A ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
-unset color_prompt force_color_prompt
-
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
 
 # SP: Remove ls colours and aliases
 
@@ -321,6 +269,61 @@ if [ -f ~/local/src/fzf/bin/fzf ] || [ -f /usr/bin/fzf ]; then
     # See https://github.com/junegunn/fzf/issues/546
     bind '"\C-t": transpose-chars'
 fi
+
+if [ "$color_prompt" = yes ]; then
+    if [ "$ENVIRONMENT" == "" ]; then
+        if which prompt-environment > /dev/null; then
+            ENVIRONMENT=$(prompt-environment)
+        else
+            ENVIRONMENT=unconfigured
+        fi
+    fi
+
+    declare -A prompt_themes
+    prompt_themes[safe]='38;2;255;255;255;48;2;27;77;62|38;2;255;255;255;48;2;46;139;87|38;2;255;255;255;48;2;27;77;62'
+    prompt_themes[development]='38;2;255;255;255;48;2;0;95;115|38;2;255;255;255;48;2;10;147;150|38;2;255;255;255;48;2;0;95;115'
+    prompt_themes[test]='38;2;255;255;255;48;2;16;78;139|38;2;255;255;255;48;2;0;139;139|38;2;255;255;255;48;2;16;78;139'
+    prompt_themes[caution]='38;2;255;255;255;48;2;139;69;0|38;2;255;255;255;48;2;217;119;6|38;2;255;255;255;48;2;139;69;0'
+    prompt_themes[qa]='38;2;255;255;255;48;2;180;83;9|38;2;0;0;0;48;2;245;158;11|38;2;255;255;255;48;2;180;83;9'
+    prompt_themes[uat]='38;2;255;255;255;48;2;88;28;135|38;2;255;255;255;48;2;147;51;234|38;2;255;255;255;48;2;88;28;135'
+    prompt_themes[production]='38;2;255;255;255;48;2;127;29;29|38;2;255;255;255;48;2;220;38;38|38;2;255;255;255;48;2;127;29;29'
+    prompt_themes[infrastructure]='38;2;255;255;255;48;2;30;58;138|38;2;255;255;255;48;2;37;99;235|38;2;255;255;255;48;2;30;58;138'
+    prompt_themes[utility]='38;2;255;255;255;48;2;51;65;85|38;2;255;255;255;48;2;100;116;139|38;2;255;255;255;48;2;51;65;85'
+    prompt_themes[third-party]='38;2;255;255;255;48;2;68;64;60|38;2;255;255;255;48;2;120;113;108|38;2;255;255;255;48;2;68;64;60'
+    prompt_themes[unconfigured]='38;2;0;0;0;48;2;0;255;255|38;2;0;0;0;48;2;255;20;147|38;2;0;0;0;48;2;57;255;20'
+    theme=${prompt_themes[$ENVIRONMENT]}
+    if [ "$theme" == '' ]; then
+        theme=${prompt_themes[unconfigured]}
+    fi
+    IFS='|'
+    read -ra theme_colours <<< "$theme"
+    time_colour="${theme_colours[0]}"
+    host_colour="${theme_colours[1]}"
+    path_colour="${theme_colours[2]}"
+
+    user_colour="$host_colour";
+    if [ "$SUDO_USER" != '' ]; then
+        # Blinking bright yellow on red
+        $user_colour='5;93;41'
+    fi
+
+    PS1='${debian_chroot:+($debian_chroot)}\[\e['$time_colour'm\e]8;;\D{%l:%M:%S%p, %A %e %B %Y}\e\\\]\A\[\e]8;;\e\\\] \[\033['$user_colour'm\]\u\[\033[0;'$host_colour'm\]@\h:\[\033['$path_colour'm\]\w\$ \[\033[00m\] '
+
+    unset -v IFS prompt_themes time_colour host_colour path_colour user_colour
+else
+    PS1='\A ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+fi
+unset color_prompt force_color_prompt
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
+    ;;
+*)
+    ;;
+esac
+
 
 #  ~/unix-profile/.installed should be removed by a push from a remote
 #  server, which likely indicates an update.
